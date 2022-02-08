@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MarsRover.Core
+﻿namespace MarsRover.Core
 {
     public interface ILogger
     {

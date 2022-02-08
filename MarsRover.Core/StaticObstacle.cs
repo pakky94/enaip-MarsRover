@@ -3,11 +3,11 @@
     public class StaticObstacle : IObstacle
     {
         public Position Position { get; private set; }
-        public string MapIcon => "O";
+        public char MapIcon => 'O';
 
-        public StaticObstacle(int x, int y)
+        public StaticObstacle(Position position)
         {
-            Position = new Position(x, y);
+            Position = position;
         }
     }
 }

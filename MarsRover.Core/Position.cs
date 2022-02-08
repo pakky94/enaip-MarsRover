@@ -9,8 +9,8 @@ namespace MarsRover.Core
 
         public Position (int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public override bool Equals(object obj)
@@ -36,6 +36,11 @@ namespace MarsRover.Core
         public static bool operator !=(Position p1, Position other)
         {
             return p1.X != other.X || p1.Y != other.Y;
+        }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
         }
     }
 }

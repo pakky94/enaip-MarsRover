@@ -9,7 +9,7 @@ namespace MarsRover.Core
         public readonly uint Width;
         public readonly uint Height;
 
-        private Dictionary<Position, IObstacle> Obstacles = new Dictionary<Position, IObstacle>();
+        private readonly Dictionary<Position, IObstacle> Obstacles = new Dictionary<Position, IObstacle>();
         public Rover Rover;
 
         public Map(uint width, uint height)
@@ -22,25 +22,33 @@ namespace MarsRover.Core
         {
             var rand = new Random();
             var map = new Map(width, height);
+
+            if (obstacles > width * height)
+                throw new Exception($"Can't fit {obstacles} in a {width} by {height} map");
+
             while (map.Obstacles.Count < obstacles)
             {
-                var obstacle = new StaticObstacle(rand.Next((int)width - 1), rand.Next((int)height - 1));
+                var obstaclePosition = new Position(rand.Next((int)width - 1), rand.Next((int)height - 1));
+                obstaclePosition = map.GetNearestFreePosition(obstaclePosition);
+                var obstacle = new StaticObstacle(obstaclePosition);
                 map.Obstacles.TryAdd(obstacle.Position, obstacle);
             }
             return map;
         }
 
-        public Rover LandNewRover()
+        public void LandRoverAt(Rover rover, Position position)
         {
-            var rand = new Random();
-            Rover rover = new Rover();
-            Position position;
-
-            do { 
-                position = new Position(rand.Next((int)Width - 1), rand.Next((int)Height - 1));
-            } while (!IsPositionFree(position));
+            position = GetNearestFreePosition(position);
             rover.UpdatePosition(position);
             Rover = rover;
+        }
+
+        public Rover LandRoverAtRandomPosition(Rover rover)
+        {
+            var rand = new Random();
+            Position position= new(rand.Next((int)Width - 1), rand.Next((int)Height - 1));
+            position = GetNearestFreePosition(position);
+            LandRoverAt(rover, position);
             return rover;
         }
 
@@ -48,6 +56,23 @@ namespace MarsRover.Core
             if (Rover is not null && Rover.Position == position)
                 return false;
             return !Obstacles.ContainsKey(position);
+        }
+
+        private Position GetNearestFreePosition(Position position)
+        {
+            var requestedPosition = position;
+            while (!IsPositionFree(position))
+            {
+                position.X += 1;
+                if (position.X >= Width)
+                {
+                    position.X = 0;
+                    position.Y = (position.Y + 1) % (int)Height;
+                }
+                if (position == requestedPosition)
+                    throw new Exception("No free position found");
+            }
+            return position;
         }
 
         public Position WrapArount(Position position)

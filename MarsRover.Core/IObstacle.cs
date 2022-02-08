@@ -3,6 +3,6 @@
     public interface IObstacle
     {
         Position Position { get; }
-        string MapIcon { get; }
+        char MapIcon { get; }
     }
 }

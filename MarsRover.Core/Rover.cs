@@ -7,21 +7,23 @@ namespace MarsRover.Core
         public Position Position { get; private set; }
         public Direction Direction;
 
-        public string MapIcon => Direction switch
+        public char MapIcon => Direction switch
         {
-            Direction.Nord => "A",
-            Direction.South => "V",
-            Direction.East => ">",
-            Direction.West => "<",
+            Direction.North => 'A',
+            Direction.South => 'V',
+            Direction.East => '>',
+            Direction.West => '<',
             _ => throw new NotImplementedException(),
         };
-        public void UpdatePosition(Position position)
+
+        internal void UpdatePosition(Position position)
         {
             Position = position;
         }
-        public Position TryMove(bool forward) => (forward ? Direction : Direction.Opposite()) switch
+
+        internal Position TryMove(bool forward) => (forward ? Direction : Direction.Opposite()) switch
         {
-            Direction.Nord => Position + new Position() { X = 0, Y = -1 },
+            Direction.North => Position + new Position() { X = 0, Y = -1 },
             Direction.South => Position + new Position() { X = 0, Y = 1 },
             Direction.East => Position + new Position() { X = 1, Y = 0 },
             Direction.West => Position + new Position() { X = -1, Y = 0 },
@@ -36,6 +38,11 @@ namespace MarsRover.Core
         internal void RotateRight()
         {
             Direction = Direction.RotateRight();
+        }
+
+        internal void WritePosition(IRoverPositionWriter roverPositionWriter)
+        {
+            roverPositionWriter.WritePosDir(Position, Direction);
         }
     }
 }
